@@ -212,7 +212,7 @@ foreach ($r in $plans.Keys) {
     $terms = Get-AzMarketplaceTerms -Publisher $Publisher -Product $Offer -Name $plan -OfferType 'virtualmachine'
     if ($terms.Accepted) { Add-Result (Get-SsuxCheckResult PASS 'marketplace-terms' "Accepted for $plan") }
     elseif ($Fix -and $PSCmdlet.ShouldProcess("$Publisher/$Offer/$plan", 'Accept Marketplace terms')) {
-      Set-AzMarketplaceTerms -Publisher $Publisher -Product $Offer -Name $plan -Terms $terms -Accept | Out-Null
+      $terms | Set-AzMarketplaceTerms -Accept | Out-Null
       Add-Result (Get-SsuxCheckResult FIXED 'marketplace-terms' "Accepted for $plan")
     }
     else { Add-Result (Get-SsuxCheckResult FAIL 'marketplace-terms' "Not accepted for $plan" -Recommendation 'Run with -Fix; Deploy-Stratusphere.ps1 also accepts them.') }

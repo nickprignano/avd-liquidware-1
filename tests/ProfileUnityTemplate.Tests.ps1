@@ -345,17 +345,18 @@ Describe 'Packaging VM' {
     $script:pkgNic = (Get-ModuleResource 'liquidware-packaging' | Where-Object Type -eq 'Microsoft.Network/networkInterfaces').Resource
     $script:pkgRoles = @(Get-ModuleResource 'liquidware-packaging' | Where-Object Type -eq 'Microsoft.Authorization/roleAssignments')
   }
-  It 'is opt-in, Windows 11 24H2 Enterprise single-session on Standard_D2as_v5 at static IP 10.61.0.36 with no public IP' {
+  It 'is opt-in, Windows 11 24H2 Enterprise single-session on Standard_D2as_v5 at static IP 10.61.0.68 with AutomaticByOS patching and no public IP' {
     $script:main['parameters']['deployPackagingVm']['defaultValue'] | Should -BeFalse
     $script:pkgModule['condition'] | Should -Be "[parameters('deployPackagingVm')]"
     $script:pkgModule['properties']['parameters']['vmName']['value'] | Should -Be "[format('vm-{0}lwpkg', variables('clean'))]"
-    $script:pkgModule['properties']['parameters']['privateIp']['value'] | Should -Be '10.61.0.36'
+    $script:pkgModule['properties']['parameters']['privateIp']['value'] | Should -Be '10.61.0.68'
     $script:pkgModule['properties']['parameters']['subnetId']['value'] | Should -Match "snet-lw-packaging"
     $img = $script:pkgVm['properties']['storageProfile']['imageReference']
     $img['publisher'] | Should -Be 'MicrosoftWindowsDesktop'
     $img['offer'] | Should -Be 'windows-11'
     $img['sku'] | Should -Be 'win11-24h2-ent'
     $img['version'] | Should -Be 'latest'
+    $script:pkgVm['properties']['osProfile']['windowsConfiguration']['patchSettings']['patchMode'] | Should -Be 'AutomaticByOS'
     $script:pkgVm['identity']['type'] | Should -Be 'SystemAssigned'
     $ip = $script:pkgNic['properties']['ipConfigurations'][0]['properties']
     $ip['privateIPAllocationMethod'] | Should -Be 'Static'

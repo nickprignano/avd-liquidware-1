@@ -214,7 +214,21 @@ Describe 'Get-SsuxVmSizeCheck' {
     $sku = [pscustomobject]@{ Restrictions = @([pscustomobject]@{ ReasonCode = 'NotAvailableForSubscription'; Type = 'Location' }) }
     (Get-SsuxVmSizeCheck -Sku $sku -VmSize Standard_D4s_v5 -Location eastus2).Status | Should -Be 'FAIL'
   }
+  It 'fails when the size supports V2 only (Gen2-only SKU for Gen1 Marketplace image)' {
+    $v2Only = [pscustomobject]@{
+      Restrictions = @()
+      Capabilities = @([pscustomobject]@{ Name = 'HyperVGenerations'; Value = 'V2' })
+    }
+    $res = Get-SsuxVmSizeCheck -Sku $v2Only -VmSize Standard_D4as_v6 -Location centralus
+    $res.Status | Should -Be 'FAIL'
+    $res.Detail | Should -Match 'require V1 \(Gen1\)'
+  }
   It 'passes when available' {
     (Get-SsuxVmSizeCheck -Sku ([pscustomobject]@{ Restrictions = @() }) -VmSize Standard_D4s_v5 -Location eastus2).Status | Should -Be 'PASS'
+    $v1v2 = [pscustomobject]@{
+      Restrictions = @()
+      Capabilities = @([pscustomobject]@{ Name = 'HyperVGenerations'; Value = 'V1,V2' })
+    }
+    (Get-SsuxVmSizeCheck -Sku $v1v2 -VmSize Standard_D4s_v4 -Location centralus).Status | Should -Be 'PASS'
   }
 }

@@ -248,7 +248,10 @@ Describe 'Key Vault, Network, Private Endpoints and Optional resources (Terrafor
     $opt = $script:files['optional.tf']
     (Get-HclBlock $opt 'resource' 'azurerm_storage_share' 'portability').Body | Should -Match 'quota\s*=\s*100'
     (Get-HclBlock $opt 'resource' 'azurerm_monitor_data_collection_rule' 'restrictions').Body | Should -Match 'lw-restrictions'
-    (Get-HclBlock $opt 'resource' 'azurerm_windows_virtual_machine' 'packaging').Body | Should -Match 'win11-24h2-ent'
+    $pkgVmBody = (Get-HclBlock $opt 'resource' 'azurerm_windows_virtual_machine' 'packaging').Body
+    $pkgVmBody | Should -Match 'win11-24h2-ent'
+    $pkgVmBody | Should -Match 'patch_mode\s*=\s*"AutomaticByOS"'
+    (Get-HclBlock $opt 'resource' 'azurerm_network_interface' 'packaging').Body | Should -Match 'private_ip_address\s*=\s*"10\.61\.0\.68"'
     (Get-HclBlock $opt 'resource' 'azurerm_recovery_services_vault' 'tier').Body | Should -Match 'public_network_access_enabled\s*=\s*false'
     (Get-HclBlock $opt 'resource' 'azurerm_backup_policy_vm' 'enhanced').Body | Should -Match 'policy_type\s*=\s*"V2"'
   }

@@ -1,6 +1,6 @@
 // On-demand FlexApp packaging VM (deploy-spec section 8.1, DN-M8): Windows 11 Enterprise single-session
 // (win11-24h2-ent), Standard_D2as_v5, Trusted Launch with SecureBoot and vTPM, encryption at host,
-// no public IP, static IP 10.61.0.36 in snet-lw-packaging, system-assigned managed identity, daily
+// no public IP, static IP 10.61.0.68 in snet-lw-packaging, system-assigned managed identity, daily
 // shutdown schedule outside prod, and least-privilege roles to read media and write appattach.
 
 param location string
@@ -9,7 +9,7 @@ param environment string
 param vmName string
 param computerName string
 param subnetId string
-param privateIp string = '10.61.0.36'
+param privateIp string = '10.61.0.68'
 param keyVaultName string
 param mediaAccountName string
 param packagesAccountName string
@@ -106,7 +106,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
       windowsConfiguration: {
         provisionVMAgent: true
         enableAutomaticUpdates: true
-        patchSettings: { patchMode: 'AutomaticByPlatform' }
+        patchSettings: { patchMode: 'AutomaticByOS' }
       }
     }
     storageProfile: {

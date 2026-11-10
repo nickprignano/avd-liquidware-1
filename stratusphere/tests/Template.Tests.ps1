@@ -26,7 +26,7 @@ BeforeAll {
 }
 
 Describe 'Marketplace image' {
-  It 'sends a plan block that matches the image reference' {
+  It 'sends a plan block that matches the image reference and attaches FromImage data disks' {
     $hub = Find-Deployment $script:template "[format('vm-{0}', parameters('role'))]"
     $p = $hub['properties']['parameters']
     $p['plan']['value']['name'] | Should -Be "[parameters('imagePlan')]"
@@ -35,6 +35,9 @@ Describe 'Marketplace image' {
     $p['imageReference']['value']['publisher'] | Should -Be "[parameters('imagePublisher')]"
     $p['plan']['value']['product'] | Should -Be "[parameters('imageOffer')]"
     $p['imageReference']['value']['offer'] | Should -Be "[parameters('imageOffer')]"
+    $app = Get-Content (Join-Path $script:root 'bicep/modules/appliance.bicep') -Raw
+    $app | Should -Match "createOption:\s*'FromImage'"
+    (Get-Content (Join-Path $script:root 'scripts/ops/Deploy-Stratusphere.ps1') -Raw) | Should -Match '\$terms\s*\|\s*Set-AzMarketplaceTerms\s+-Accept'
   }
 }
 

@@ -75,7 +75,7 @@ resource "azurerm_network_interface" "packaging" {
     name                          = "ipconfig1"
     subnet_id                     = azurerm_subnet.packaging.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.61.0.36"
+    private_ip_address            = "10.61.0.68"
   }
 }
 
@@ -94,7 +94,7 @@ resource "azurerm_windows_virtual_machine" "packaging" {
   encryption_at_host_enabled = true
   provision_vm_agent         = true
   enable_automatic_updates   = true
-  patch_mode                 = "AutomaticByPlatform"
+  patch_mode                 = "AutomaticByOS"
   tags                       = merge(local.all_tags, { "liquidware-role" = "packaging" })
 
   identity {
