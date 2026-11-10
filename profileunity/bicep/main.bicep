@@ -216,7 +216,7 @@ module packaging 'modules/packaging.bicep' = if (deployPackagingVm) {
     vmName: 'vm-${clean}lwpkg'
     computerName: take('${clean}lwpkg', 15)
     subnetId: '${tier.outputs.vnetId}/subnets/snet-lw-packaging'
-    privateIp: '10.61.0.36'
+    privateIp: '10.61.0.68'
     keyVaultName: tier.outputs.keyVaultName
     mediaAccountName: media.outputs.accountName
     packagesAccountName: tier.outputs.packagesAccountName

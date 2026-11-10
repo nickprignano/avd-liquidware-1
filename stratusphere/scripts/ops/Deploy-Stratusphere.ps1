@@ -338,7 +338,7 @@ function Confirm-Plan([hashtable] $Plans) {
     if ($terms.Accepted) { Add-Result (Get-SsuxCheckResult PASS 'marketplace-terms' "Accepted for $p") }
     elseif ($Action -eq 'Plan') { Add-Result (Get-SsuxCheckResult WARN 'marketplace-terms' "Not accepted for $p yet; Deploy accepts them") }
     else {
-      Set-AzMarketplaceTerms -Publisher $publisher -Product $offer -Name $p -Terms $terms -Accept | Out-Null
+      $terms | Set-AzMarketplaceTerms -Accept | Out-Null
       Add-Result (Get-SsuxCheckResult FIXED 'marketplace-terms' "Accepted for $p")
     }
   }
@@ -554,7 +554,7 @@ switch ($Action) {
           'accept-terms' {
             if ($PSCmdlet.ShouldProcess($s.Target, 'Accept Marketplace terms')) {
               $t = Get-AzMarketplaceTerms -Publisher $publisher -Product $offer -Name $s.Target -OfferType 'virtualmachine'
-              Set-AzMarketplaceTerms -Publisher $publisher -Product $offer -Name $s.Target -Terms $t -Accept | Out-Null
+              $t | Set-AzMarketplaceTerms -Accept | Out-Null
               Add-Result (Get-SsuxCheckResult FIXED 'marketplace-terms' "Accepted for $($s.Target)")
             }
           }

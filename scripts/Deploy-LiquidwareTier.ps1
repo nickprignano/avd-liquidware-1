@@ -449,8 +449,11 @@ if ($profileUnity -and $Action -in 'Plan', 'Deploy', 'Fix' -and @($results | Whe
   }
   # The operator uploads installers to media (Storage Blob Data Contributor there, for them only).
   $operator = Get-AzADUser -SignedIn -ErrorAction SilentlyContinue
+  if (-not $operator -and $env:LW_OPERATOR_OBJECT_ID) {
+    $operator = [pscustomobject]@{ Id = $env:LW_OPERATOR_OBJECT_ID }
+  }
   if (-not $operator) {
-    Add-Result (Get-LwCheckResult FAIL 'operator' 'The signed-in account is not a user, so it cannot be the media operator.' -Recommendation 'Run from Cloud Shell signed in as yourself.' -Category 'ProfileUnity')
+    Add-Result (Get-LwCheckResult FAIL 'operator' 'The signed-in account is not a user, so it cannot be the media operator.' -Recommendation 'Run from Cloud Shell signed in as yourself, or set LW_OPERATOR_OBJECT_ID.' -Category 'ProfileUnity')
   }
   Write-Host 'Reading the console VM and the license secret (management plane) ...'
   $consoleVm = $null

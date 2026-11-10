@@ -346,6 +346,12 @@ function Get-SsuxVmSizeCheck {
   if ($blocked.Count -gt 0) {
     return Get-SsuxCheckResult FAIL 'vm-size' "$VmSize is restricted for this subscription in $Location" -Category Capacity
   }
+  if ($Sku.PSObject.Properties['Capabilities'] -and $Sku.Capabilities) {
+    $genCap = @($Sku.Capabilities | Where-Object Name -eq 'HyperVGenerations') | Select-Object -First 1
+    if ($genCap -and $genCap.Value -notmatch '(^|,)V1(,|$)') {
+      return Get-SsuxCheckResult FAIL 'vm-size' "$VmSize supports Hyper-V generation '$($genCap.Value)' only; Stratusphere Marketplace images require V1 (Gen1)" -Recommendation 'Pick a Gen1-capable VM size such as Standard_D4s_v4 or Standard_D4as_v4.' -Category Capacity
+    }
+  }
   Get-SsuxCheckResult PASS 'vm-size' "$VmSize is available in $Location" -Category Capacity
 }
 

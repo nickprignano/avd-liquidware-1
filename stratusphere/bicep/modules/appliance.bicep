@@ -29,6 +29,12 @@ param autoShutdownTime string = '2000'
 @description('Windows time zone ID for the daily auto-shutdown schedule.')
 param autoShutdownTimeZone string = 'Central Standard Time'
 
+@description('LUNs of data disks included in the Marketplace image (Stratusphere 6.7 images carry LUN 0 and LUN 1).')
+param dataDiskLuns array = [
+  0
+  1
+]
+
 module vm 'br/public:avm/res/compute/virtual-machine:0.22.3' = {
   name: 'vm-${role}'
   params: {
@@ -58,6 +64,17 @@ module vm 'br/public:avm/res/compute/virtual-machine:0.22.3' = {
         storageAccountType: 'Premium_LRS'
       }
     }
+    dataDisks: [
+      for lun in dataDiskLuns: {
+        lun: lun
+        createOption: 'FromImage'
+        caching: 'ReadWrite'
+        deleteOption: 'Delete'
+        managedDisk: {
+          storageAccountType: 'Premium_LRS'
+        }
+      }
+    ]
     adminUsername: adminUsername
     adminPassword: adminPassword
     disablePasswordAuthentication: false
